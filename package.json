@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "@night-watch-project/chatbot-server",
+  "description": "Night Watch chatbot server",
+  "author": "Night Watch Project",
+  "license": "MIT",
+  "repository": "github:night-watch-project/chatbot-server",
+  "version": "0.0.1",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "NODE_ENV=development node src/server",
+    "start": "NODE_ENV=production node src/server"
+  },
+  "dependencies": {
+    "dotenv-flow": "^3.0.0-rc.1",
+    "fastify": "^2.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1"
+  }
+}
