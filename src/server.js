@@ -3,9 +3,10 @@ require('dotenv-flow').config()
 const fastify = require('fastify')
 const axios = require('axios')
 
-const loggerLevel = process.env.NODE_ENV !== 'production' ? 'debug' : 'info'
+const { NODE_ENV, PORT, PAGE_ACCESS_TOKEN, VERIFY_TOKEN } = process.env
+
+const loggerLevel = NODE_ENV !== 'production' ? 'debug' : 'info'
 const server = fastify({ ignoreTrailingSlash: true, logger: { level: loggerLevel } })
-const { PAGE_ACCESS_TOKEN, VERIFY_TOKEN } = process.env
 
 server.get('/', async () => {
   return { iam: '/' }
@@ -63,7 +64,7 @@ const handleMessage = async (senderPsid, receivedMessage) => {
 
 const start = async () => {
   try {
-    await server.listen(process.env.PORT || 3003, '::') // listen to all IPv6 and IPv4 addresses
+    await server.listen(PORT || 3003, '::') // listen to all IPv6 and IPv4 addresses
   } catch (err) {
     server.log.error(err)
     process.exit(1)
