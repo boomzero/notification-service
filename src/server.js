@@ -3,7 +3,7 @@ require('dotenv-flow').config()
 const fastify = require('fastify')
 const axios = require('axios')
 
-const { NODE_ENV, PORT, PAGE_ACCESS_TOKEN, VERIFY_TOKEN } = process.env
+const { NODE_ENV, PORT, PAGE_ACCESS_TOKEN, VERIFY_TOKEN, RECIPIENT_ID } = process.env
 
 const loggerLevel = NODE_ENV !== 'production' ? 'debug' : 'info'
 const server = fastify({ ignoreTrailingSlash: true, logger: { level: loggerLevel } })
@@ -12,26 +12,7 @@ server.get('/', async () => {
   return { iam: '/' }
 })
 
-server.post('/webhook', (req, res) => {
-  const { body } = req
-
-  if (body.object === 'page') {
-    body.entry.forEach((entry) => {
-      const webhookEvent = entry.messaging[0]
-      res.log.info(webhookEvent)
-
-      const senderPsid = webhookEvent.sender.id
-      if (webhookEvent.message) {
-        handleMessage(senderPsid, webhookEvent.message)
-      }
-    })
-    res.code(200).send('EVENT_RECEIVED')
-  } else {
-    res.code(404)
-  }
-})
-
-server.get('/webhook', (req, res) => {
+server.get('/messenger/webhook', (req, res) => {
   const mode = req.query['hub.mode']
   const token = req.query['hub.verify_token']
   const challenge = req.query['hub.challenge']
@@ -44,23 +25,48 @@ server.get('/webhook', (req, res) => {
   }
 })
 
-const handleMessage = async (senderPsid, receivedMessage) => {
-  const url = `https://graph.facebook.com/v2.6/me/messages?access_token=${PAGE_ACCESS_TOKEN}`
+server.post('/messenger/webhook', (req, res) => {
+  const { body } = req
+  if (body.object === 'page') {
+    body.entry.forEach((entry) => {
+      const webhookEvent = entry.messaging[0]
+      const senderId = webhookEvent.sender.id
+      res.log.info(senderId)
+    })
+    res.code(200).send('EVENT_RECEIVED')
+  } else res.code(404)
+})
+
+server.post('/notifications/changes', async (req, res) => {
+  const { body } = req
+  const facebookUrl = `https://graph.facebook.com/v2.6/me/messages?access_token=${PAGE_ACCESS_TOKEN}`
   try {
-    if (receivedMessage.text) {
-      await axios.post(url, {
+    await axios.post(facebookUrl, {
+      recipient: {
+        id: `${RECIPIENT_ID}`
+      },
+      message: {
+        text: `Website ban dang theo doi: "${body.url}" da co su thay doi`
+      }
+    })
+    for (const cssSelector in body.changes) {
+      await axios.post(facebookUrl, {
         recipient: {
-          id: `${senderPsid}`
+          id: `${RECIPIENT_ID}`
         },
         message: {
-          text: `You sent: "${receivedMessage.text}".`
+          text: `Gia tri "${cssSelector}" da thay doi, chuyen tu "${
+            body.changes[cssSelector][0]
+          }" sang "${body.changes[cssSelector][1]}"`
         }
       })
     }
+    res.code(204)
   } catch (err) {
-    server.log.error('Unable to send message: ' + err)
+    server.log.error(err.message)
+    res.code(500)
   }
-}
+})
 
 const start = async () => {
   try {
