@@ -1,4 +1,4 @@
-# Night Watch chatbot server
+# Night Watch notification service
 
 ## INSTALLATION
 
