@@ -22,6 +22,7 @@ $ yarn start # yarn dev for development
 - `PORT` (number): Port number to run the server
 - `FB_PAGE_ACCESS_TOKEN` (string): Token to access Facebook page
 - `FB_VERIFY_TOKEN` (string): Token to connect notificaion service to Facebook webhook
+- `RECIPIENT_ID` (string): Testing Facebook account ID _(temporary)_
 
 ### Routes
 
