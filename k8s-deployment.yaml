@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+  labels:
+      app: notification 
+      phase: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+        tier: backend
+        phase: test
+    spec:
+      containers:
+      - name: notification-container
+        image: boomzero/night-watch:notification
+        ports:
+        - containerPort: 3003
+        imagePullPolicy: Always
