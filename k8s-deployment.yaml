@@ -21,13 +21,13 @@ spec:
       - name: notification-container
         image: boomzero/night-watch:notification
         ports:
-        - containerPort: 3003
+        - containerPort: 3030
         imagePullPolicy: Always
         env:
         - name: NODE_ENV
           value: "development"
         - name: PORT
-          value: "3003"
+          value: "3030"
         - name: FB_PAGE_ACCESS_TOKEN
           valueFrom:
             secretKeyRef:
