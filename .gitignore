@@ -93,3 +93,4 @@ yarn.lock
 
 # Sensitive data files
 *.private.*
+k8s-secret.yaml

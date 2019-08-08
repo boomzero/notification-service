@@ -23,3 +23,24 @@ spec:
         ports:
         - containerPort: 3003
         imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: PORT
+          value: "3003"
+        - name: FB_PAGE_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: notification
+              key: FB_PAGE_ACCESS_TOKEN
+        - name: FB_VERIFY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: notification
+              key: FB_VERIFY_TOKEN
+        - name: RECIPIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: notification
+              key: RECIPIENT_ID
+
